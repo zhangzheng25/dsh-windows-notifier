@@ -1,0 +1,11 @@
+# dsh-windows-notifier bundle patch: contributes the plugin row into the
+# host composition when this package is installed via `dsh plugin add`.
+#
+# The plugin is HOST-PLANE: it listens for session turn completion and sends
+# Windows toast notifications, and its client half registers a small settings
+# section. It must therefore land in the host composition (this insert),
+# never inside an agent preset.
+
+- insert:
+    - id: notifier
+      name: 'dsh-windows-notifier'
