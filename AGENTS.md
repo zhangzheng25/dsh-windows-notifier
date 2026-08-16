@@ -20,7 +20,6 @@ npm run check   # node --check src/index.js && node --check client/bundle.js
   - Exports `{ name: 'dsh-notifier', inject: ['webServer'], apply(ctx) }`.
   - Listens to `ctx.on('session/event')` for `turn/end`, `approval/asked`, and `tool/call` (`ask_user_question`).
   - Sends toasts through `node-notifier` (snoretoast on Windows).
-  - Each toast gets an `id` and a `知道了` action; clicking it calls `notifier.notify({ remove: id })` to clear it from Windows Action Center.
   - Serves `GET/POST /dsh-notifier/config`.
 - `client/bundle.js` — web client.
   - Hand-written bundle matching the DSH `client-modules` protocol: `window.__ModuleLoader__.load({ id, factory })`.

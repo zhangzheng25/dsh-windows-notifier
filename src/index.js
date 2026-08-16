@@ -170,18 +170,13 @@ module.exports = {
       return config
     }
 
-    let toastSeq = 0
     function sendToast(title, message) {
       if (!config.enabled) return
-      const id = ++toastSeq
       const options = {
-        id,
         title,
         message,
         icon: ICON_PATH,
         sound: config.sound === true,
-        wait: true,
-        actions: ['知道了'],
       }
       notifier.notify(options, (error, response) => {
         if (error) {
@@ -189,15 +184,6 @@ module.exports = {
           return
         }
         const action = response && response.activationType
-        if (action === '知道了') {
-          // Acknowledge and remove this notification from Windows Action Center.
-          notifier.notify({ remove: id }, (removeError) => {
-            if (removeError && ctx.logger) {
-              ctx.logger.warn('[dsh-notifier] toast dismiss failed: ' + String((removeError && removeError.message) || removeError))
-            }
-          })
-          return
-        }
         if (action === 'click' || action === 'activate') {
           openUrl(config.clickUrl)
         }
