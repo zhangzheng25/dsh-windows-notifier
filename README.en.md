@@ -14,6 +14,7 @@ A minimal [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) pl
 - 🔔 **Windows Toast** — Uses `node-notifier` to send native Windows notifications, no extra runtime required.
 - ✅ **Status notifications** — Answer completed / failed / interrupted / authorization required / answer required.
 - 💬 **Status as title, question as body** — The toast title is the status (e.g. `Answer completed` / `Authorization required`); the body is your latest question. Skill invocations are collapsed to `Calling xxx skill`.
+- ✅ **"Got it" button** — Clicking it actively removes the notification from Windows Action Center so toasts do not pile up.
 - 🚫 **Subagent isolation** — Only root sessions are monitored; subagent completions do not disturb you.
 - 🎛️ **Minimal settings page** — Settings → Notifications: enable toggle, sound toggle, and click URL.
 - 🎨 **DSH native style** — Light/dark theme aware using `--dsw-alias-*` variables.
