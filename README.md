@@ -13,7 +13,7 @@
 
 - 🔔 **Windows Toast** — 使用 `node-notifier` 发送 Windows 原生右下角通知，无需额外安装运行时。
 - ✅ **状态提醒** — 回答完成 / 回答失败 / 回答中断 / 需要授权 / 需要回答，都会弹出对应状态。
-- 💬 **标题即提问** — 通知标题取你最新一条提问内容（截断到 60 字），正文只显示状态文字，不展示工具调用、耗时、步数等细节。
+- 💬 **状态即标题，提问即正文** — 通知标题显示状态文字（如 `回答完成` / `需要授权`），正文显示你最新一条提问内容；调用 skill 时正文折叠为 `调用 xxx skill`。
 - 🚫 **子代理隔离** — 只监听顶层会话，子代理完成不会打扰你。
 - 🎛️ **极简设置页** — 设置 → 通知：启用开关、提示音开关、点击“查看”打开的地址。
 - 🎨 **DSH 原生风格** — 亮色/暗色主题自适应，使用 `--dsw-alias-*` 主题变量；扁平卡片、细边框、圆角。
@@ -45,7 +45,8 @@ dsh plugin --profile web add D:\path\to\dsh-windows-notifier
 │  • turn/end → 回答完成 / 失败 / 中断                               │
 │  • approval/asked → 需要授权                                       │
 │  • tool/call(ask_user_question) → 需要回答                         │
-│  • latestUserPrompt()            ← 取最近一条用户提问作为标题        │
+│  • latestUserPrompt()            ← 取最近一条用户提问作为正文        │
+│  • promptBody()                  ← skill 调用折叠为“调用 xxx skill” │
 │  • node-notifier                 ← 发送 Windows Toast              │
 │  • webServer.register('/dsh-notifier/config')                     │
 └─────────────────────────────────────────────────────────────────────┘
@@ -75,7 +76,7 @@ $DSH_HOME/plugins/dsh-notifier/config.json
 
 ## 触发事件
 
-| 状态 | 触发事件 | Toast 正文 |
+| 状态 | 触发事件 | Toast 标题 |
 |---|---|---|
 | 回答完成 | `turn/end` reason `completed` / `max-tokens` | `回答完成` |
 | 回答失败 | `turn/end` reason `error` | `回答失败` |
@@ -83,9 +84,11 @@ $DSH_HOME/plugins/dsh-notifier/config.json
 | 需要授权 | `session/event` `approval/asked` | `需要授权` |
 | 需要回答 | `session/event` `tool/call` `ask_user_question` | `需要回答` |
 
+Toast 正文固定为用户最新提问；当用户消息以 `<skill_content name="...">` 开头时，正文显示为 `调用 某skill skill`。
+
 ## 已知限制
 
-- **标题截断**：通知标题取用户提问前 60 字，超长会被截断并追加 `…`。
+- **正文截断**：通知正文取用户提问前 120 字，超长会被截断并追加 `…`。
 - **Windows only**：当前只针对 Windows Toast 优化，macOS / Linux 未做适配。
 - **通知图标**：使用项目内 `deepseek.png` 作为 Toast 图标。
 - **无测试**：仅提供 `node --check` 语法检查，暂无自动化测试。

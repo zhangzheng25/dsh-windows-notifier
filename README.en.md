@@ -13,7 +13,7 @@ A minimal [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) pl
 
 - 🔔 **Windows Toast** — Uses `node-notifier` to send native Windows notifications, no extra runtime required.
 - ✅ **Status notifications** — Answer completed / failed / interrupted / authorization required / answer required.
-- 💬 **Question as title** — The toast title is your latest question (truncated to 60 chars); the body only shows the status, without tool calls, duration, or steps.
+- 💬 **Status as title, question as body** — The toast title is the status (e.g. `Answer completed` / `Authorization required`); the body is your latest question. Skill invocations are collapsed to `Calling xxx skill`.
 - 🚫 **Subagent isolation** — Only root sessions are monitored; subagent completions do not disturb you.
 - 🎛️ **Minimal settings page** — Settings → Notifications: enable toggle, sound toggle, and click URL.
 - 🎨 **DSH native style** — Light/dark theme aware using `--dsw-alias-*` variables.
@@ -44,13 +44,15 @@ Restart DSH after installation, then open **Settings → Notifications**.
 
 ## Triggers
 
-| Status | Trigger | Toast body |
+| Status | Trigger | Toast title |
 |---|---|---|
 | Completed | `turn/end` reason `completed` / `max-tokens` | `Answer completed` |
 | Failed | `turn/end` reason `error` | `Answer failed` |
 | Interrupted | `turn/end` reason `aborted` / `blocked` | `Answer interrupted` / `Answer blocked` |
 | Authorization required | `session/event` `approval/asked` | `Authorization required` |
 | Answer required | `session/event` `tool/call` `ask_user_question` | `Answer required` |
+
+The toast body is the user's latest question; when it starts with `<skill_content name="...">`, the body is collapsed to `Calling xxx skill`.
 
 ## Development
 

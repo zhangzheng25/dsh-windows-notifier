@@ -7,7 +7,8 @@
  *   - Listens to `session/event`.
  *   - Sends a Windows toast when a root conversation changes status:
  *       回答完成 / 回答失败 / 回答中断 / 需要授权 / 需要回答
- *   - Toast title is the user's latest question; body is the status.
+ *   - Toast title is the status; body is the user's latest question.
+ *   - Skill invocations are collapsed to "调用 xxx skill" in the body.
  *   - Serves /dsh-notifier/config so the small settings section in the web UI
  *     can read and update the supported options.
  *
@@ -81,7 +82,7 @@ function extractText(content) {
  * Find the user's latest real question before a given event seq.
  * System reminders are ignored.
  */
-function latestUserPrompt(session, beforeSeq) {
+function latestUserPrompt(session, beforeSeq, max = 120) {
   const events = Array.isArray(session && session.events) ? session.events : []
   for (let i = events.length - 1; i >= 0; i--) {
     const e = events[i]
@@ -89,9 +90,21 @@ function latestUserPrompt(session, beforeSeq) {
     if (typeof beforeSeq === 'number' && e.seq >= beforeSeq) continue
     if (e.type !== 'user/message') continue
     const text = extractText(e.data && e.data.content)
-    if (text && !text.startsWith('<system-reminder>')) return truncate(text, 60)
+    if (text && !text.startsWith('<system-reminder>')) return truncate(text, max)
   }
   return ''
+}
+
+/**
+ * Build the toast body from the user's latest question.
+ * Skill invocations are collapsed to a short "调用 xxx skill" line instead of
+ * showing the whole <skill_content> payload.
+ */
+function promptBody(session, beforeSeq) {
+  const text = latestUserPrompt(session, beforeSeq)
+  const match = /<skill_content\s+name=["']([^"']+)["']/i.exec(text)
+  if (match) return '调用 ' + match[1] + ' skill'
+  return text
 }
 
 function isRootSession(session) {
@@ -184,15 +197,13 @@ module.exports = {
 
       // 需要授权
       if (event.type === 'approval/asked') {
-        const title = latestUserPrompt(session, event.seq) || 'DSH 通知'
-        sendToast(title, '需要授权')
+        sendToast('需要授权', promptBody(session, event.seq) || 'DSH 通知')
         return
       }
 
       // 需要回答（ask_user_question 工具触发）
       if (event.type === 'tool/call' && event.data && event.data.name === 'ask_user_question') {
-        const title = latestUserPrompt(session, event.seq) || 'DSH 通知'
-        sendToast(title, '需要回答')
+        sendToast('需要回答', promptBody(session, event.seq) || 'DSH 通知')
         return
       }
 
@@ -217,8 +228,7 @@ module.exports = {
         default:
           return
       }
-      const title = latestUserPrompt(session, event.seq) || 'DSH 通知'
-      sendToast(title, message)
+      sendToast(message, promptBody(session, event.seq) || 'DSH 通知')
     })
 
     ctx.effect(() => ctx.webServer.register({
