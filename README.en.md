@@ -40,7 +40,7 @@ Restart DSH after installation, then open **Settings → Notifications**.
 |---|---|---|---|
 | `enabled` | boolean | `true` | Master switch. |
 | `sound` | boolean | `true` | Whether the Windows toast plays a sound. |
-| `clickUrl` | string | `http://127.0.0.1:3080` | URL opened when clicking "View" on the toast. |
+| `clickUrl` | string | `http://127.0.0.1:3080` | URL opened when clicking the toast. |
 
 ## Triggers
 

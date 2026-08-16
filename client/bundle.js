@@ -180,7 +180,7 @@ window.__ModuleLoader__.load({
           onChange: function (v) { update({ sound: v }) }
         }),
         React.createElement(InputCard, {
-          label: "点击“查看”打开的地址",
+          label: "点击通知打开的地址",
           hint: "默认打开 DSH Web 页面。",
           value: config.clickUrl || "",
           onChange: function (v) { update({ clickUrl: v }) }

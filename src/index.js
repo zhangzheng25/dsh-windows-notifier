@@ -177,8 +177,6 @@ module.exports = {
         message,
         icon: ICON_PATH,
         sound: config.sound === true,
-        wait: true,
-        actions: ['查看'],
       }
       notifier.notify(options, (error, response) => {
         if (error) {
@@ -186,7 +184,7 @@ module.exports = {
           return
         }
         const action = response && response.activationType
-        if (action === '查看' || action === 'click' || action === 'activate') {
+        if (action === 'click' || action === 'activate') {
           openUrl(config.clickUrl)
         }
       })
